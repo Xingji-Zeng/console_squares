@@ -1,4 +1,5 @@
 #include<iostream>
+#include<stdlib.h>
 #include<assert.h>
 
 using namespace std;
@@ -49,13 +50,35 @@ class Checker{
 			}
 		}
 
+		bool ifWin(int player){
+			bool judgement;
+				//horizonal
+			if((ifPlaced[0]==player && ifPlaced[1]==player && ifPlaced[2]==player) ||
+				(ifPlaced[3]==player && ifPlaced[4]==player && ifPlaced[5]==player) ||
+				(ifPlaced[6]==player && ifPlaced[7]==player && ifPlaced[8]==player) ||
+				//vertical
+				(ifPlaced[0]==player && ifPlaced[3]==player && ifPlaced[6]==player) ||
+				(ifPlaced[1]==player && ifPlaced[4]==player && ifPlaced[7]==player) ||
+				(ifPlaced[2]==player && ifPlaced[5]==player && ifPlaced[8]==player) ||
+				//slope
+				(ifPlaced[0]==player && ifPlaced[4]==player && ifPlaced[8]==player) ||
+				(ifPlaced[2]==player && ifPlaced[4]==player && ifPlaced[6]==player) ) judgement = 1;
+			else judgement =0 ;
+			return judgement;
+		}
+
 }	checker;
 
+void introduction(){
+	cout << "This is a very simple game, please each player input number from 0 ~ 8 to fill the checker like this\n"
+		 << " __ __ __ \n"
+		 << "|0_|1_|2_|\n"
+		 << "|3_|4_|5_|\n"
+		 << "|6_|7_|8_|\n" << endl;
+}
 
-void oneTurn()
-{
-	checker.init();
-	
+void oneTurn( int turns)
+{	
 	//A to place a piece
 	int player = 1;
 	int position = 0;
@@ -65,12 +88,35 @@ void oneTurn()
 		cin >> position ;
 		havePlaced = checker.placePiece(position , player);
 		checker.printChecker();
+	} 
+	
+	//Break after A placed in the last turn 
+	//B to place a piece
+	if(turns < 4 && !checker.ifWin(1)){
+		player = 2;
+		havePlaced = 0;
+		while(!havePlaced){
+			cout << "B's turn to place" << endl;
+			cin >> position ; 
+			havePlaced = checker.placePiece(position , player);
+			checker.printChecker();
+		}	
 	}
 //	checker.printChecker();
 }
 
 int main(){
-	for(int i = 0 ; i < 2 ; i++){
-		oneTurn();
+	introduction();
+	checker.init();
+	bool Awin=0 , Bwin=0;
+	for(int i = 0 ; i < 5 ; i++){
+		if(!Awin && !Bwin) oneTurn(i);
+		if(i >= 2){
+			Awin = checker.ifWin(1);
+			Bwin = checker.ifWin(2);
+		}
 	}
+	if(Awin) cout << "A wins!";
+	else if(Bwin) cout << "B wins!";
+	else cout << "Draw";
 }
